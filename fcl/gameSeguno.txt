@@ -1,0 +1,90 @@
+FUNCTION_BLOCK game
+
+VAR_INPUT
+   health : REAL;
+   sword : REAL;
+   shield : REAL;
+   enemies : REAL;
+END_VAR
+
+VAR_OUTPUT
+   panic : REAL;
+   attack : REAL;
+   hide : REAL;
+   run : REAL;
+END_VAR
+
+FUZZIFY health
+   TERM low := (0, 1) (2, 0);
+   TERM medium := (1, 0) (2, 1) (3, 0);
+   TERM high := (2, 0) (3, 1);
+END_FUZZIFY
+
+FUZZIFY sword
+   TERM weak := (0, 1) (1, 0);
+   TERM strong := (1, 0) (2, 1);
+END_FUZZIFY
+
+FUZZIFY shield
+   TERM none := (0, 1) (1, 0);
+   TERM present := (1, 0) (2, 1);
+END_FUZZIFY
+
+FUZZIFY enemies
+   TERM few := (0, 1) (1, 0);
+   TERM many := (1, 0) (2, 1);
+END_FUZZIFY
+
+DEFUZZIFY panic
+   TERM low := (0, 1) (0.5, 0);
+   TERM medium := (0.5, 0) (1, 1) (2, 0);
+   TERM high := (2, 0) (2.5, 1) (3, 1);
+   METHOD : COG;
+   DEFAULT := 0;
+END_DEFUZZIFY
+
+DEFUZZIFY attack
+   TERM none := (0, 1) (0.5, 0);
+   TERM low := (0.5, 0) (1, 1) (2, 0);
+   TERM high := (2, 0) (2.5, 1) (3, 1);
+   METHOD : COG;
+   DEFAULT := 0;
+END_DEFUZZIFY
+
+DEFUZZIFY hide
+   TERM low := (0, 1) (0.5, 0);
+   TERM medium := (0.5, 0) (1, 1) (2, 0);
+   TERM high := (2, 0) (2.5, 1) (3, 1);
+   METHOD : COG;
+   DEFAULT := 0;
+END_DEFUZZIFY
+
+DEFUZZIFY run
+   TERM low := (0, 1) (0.5, 0);
+   TERM medium := (0.5, 0) (1, 1) (2, 0);
+   TERM high := (2, 0) (2.5, 1) (3, 1);
+   METHOD : COG;
+   DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+    AND : MIN;
+    OR : MAX;
+    ACT : MIN;
+
+    RULE 1 : IF health IS low AND sword IS weak AND shield IS none THEN hide IS high;
+    RULE 2 : IF health IS low AND sword IS weak AND shield IS present THEN hide IS high;
+    RULE 3 : IF health IS low AND sword IS strong THEN hide IS high;
+
+    RULE 4 : IF health IS medium AND sword IS weak AND enemies IS few THEN attack IS high;
+    RULE 5 : IF health IS medium AND sword IS weak AND enemies IS many THEN run IS high ;
+    RULE 6 : IF health IS medium AND sword IS strong AND enemies IS few THEN attack IS high;
+    RULE 7 : IF health IS medium AND sword IS strong AND enemies IS many THEN run IS high;
+
+    RULE 8 : IF health IS high AND sword IS weak AND enemies IS few THEN attack IS high;
+    RULE 9 : IF health IS high AND sword IS weak AND enemies IS many THEN run IS high;
+    RULE 10 : IF health IS high AND sword IS strong AND enemies IS few THEN attack IS high;
+    RULE 11 : IF health IS high AND sword IS strong AND enemies IS many THEN panic IS high;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
